@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-@Path("/resteasy/")
+@Path("/abcl/")
 public class AbclTestResource {
 
     @Inject
@@ -41,12 +41,14 @@ public class AbclTestResource {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Callable<String> callable = () -> {
             InputStream inputStream = new ByteArrayInputStream(this.getClass().getClassLoader().getResourceAsStream("test.lisp").readAllBytes());
-            var lispCode = new BufferedReader(new InputStreamReader(inputStream)).lines()
-                    .collect(Collectors.joining("\n"));
+            var lispCode = new StringBuilder("(progn ")
+                    .append(new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    .collect(Collectors.joining("\n")))
+                    .append(")")
+                    .toString();
+
             LispObject lispObject = interpreter.eval(lispCode);
-            // var car = lispObject.car();
-            // var cdr = lispObject.cdr();
-            return lispObject.getStringValue(); // it returns 'ONE'. I expected 'two'.
+            return lispObject.getStringValue();
         };
         return executor.submit(callable).get();
     }

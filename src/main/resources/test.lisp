@@ -1,7 +1,7 @@
-(defun one (name)
+(defun one ()
    "one")
 
-(defun two (name)
+(defun two ()
    "two")
 
 (two)
