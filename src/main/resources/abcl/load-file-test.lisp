@@ -1,2 +1,2 @@
-(load "classes/abcl/test.lisp")
-(one)
+(load "three.lisp")
+(high-five)
