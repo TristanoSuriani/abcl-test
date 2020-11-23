@@ -2,12 +2,12 @@ package nl.tsuriani.abcltest.infra;
 
 import lombok.extern.java.Log;
 import org.armedbear.lisp.Interpreter;
-import org.armedbear.lisp.LispObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Optional;
@@ -22,11 +22,13 @@ public class LispExecutor {
 	@Inject
 	Interpreter interpreter;
 
-	public Optional<LispExecutionResult> loadFromResourceFile(String resourcePath) {
+	public Optional<LispExecutionResult> loadFromResourceFile(String lispFileName) {
 		try {
+			final String normalizedName = "classes/abcl/" +
+					(lispFileName.endsWith(".lisp")? lispFileName : lispFileName + ".lisp");
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			Callable<LispExecutionResult> callable = () -> {
-				InputStream inputStream = new ByteArrayInputStream(this.getClass().getClassLoader().getResourceAsStream(resourcePath).readAllBytes());
+				InputStream inputStream = new FileInputStream(new File(normalizedName));
 				var lispCode = new StringBuilder("(progn ")
 						.append(new BufferedReader(new InputStreamReader(inputStream)).lines()
 								.collect(Collectors.joining("\n")))
